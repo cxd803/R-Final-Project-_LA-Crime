@@ -18,6 +18,9 @@ clean_data$Date.Reported=mdy(clean_data$Date.Reported)
 clean_data$Date.Occurred=mdy(clean_data$Date.Occurred)
 clean_data$Time.Occurred=hm(clean_data$Time.Occurred)
 
+### Omit the 2018 data, since it doesn't cover the whole year
+clean_data=clean_data%>%
+  filter(year(Date.Occurred)!=2018)
 
 ### Format the location column into Lat & Lon
 # remove the ()
@@ -60,7 +63,7 @@ USC_data=clean_data%>%
 USC_data%>%
   ggplot(aes(x=year(Date.Occurred),fill=Crime.Category))+
   geom_bar()+
-  scale_x_continuous(breaks=seq(2010,2018,1))+
+  scale_x_continuous(breaks=seq(2010,2017,1))+
   scale_y_continuous(limits=c(0,10000))+
   ggtitle("Total Numbers of Crimes around USC")+
   xlab("Year")+
@@ -72,7 +75,7 @@ USC_data%>%
 USC_data%>%
   ggplot(aes(x=year(Date.Occurred),fill=Crime.Category))+
   geom_bar(position="fill")+
-  scale_x_continuous(breaks=seq(2010,2018,1))+
+  scale_x_continuous(breaks=seq(2010,2017,1))+
   ggtitle("Non-Violent v.s Violent Crimes around USC")+
   xlab("Year")+
   ylab("")+
@@ -88,8 +91,8 @@ Los_Angeles+
   geom_bin2d(data=clean_data,aes(x=Lon,y=Lat,fill=Crime.Category),
              color="black",size=0.01,bins=200,alpha=0.3)+
   scale_fill_manual(values=c("Violent"="red","Non-Violent"="black"))+
-  theme(legend.title=element_blank())
-
+  theme(legend.title=element_blank())+
+  ggtitle("Los Angeles Non-Violent v.s Violent Crime Map 2010-2017" )
 
 
 
@@ -104,11 +107,16 @@ violent_data=clean_data%>%
                            ifelse(Crime.Code.Description%in%c("ATTEMPTED ROBBERY","ROBBERY"),"Robbery",
                                   ifelse(Crime.Code.Description%in%c("CRIMINAL HOMICIDE","MANSLAUGHTER,NEGLIGENT"),"Murder and Manslaughter","Rape"))))
 
-##Total number of violent crimes each year 2010 - 2018
+## Violent crime data around USC
+violent_data_USC=violent_data%>%
+  filter(Lon>=-118.309088&Lon<=-118.263512,Lat>=34.003799&Lat<=34.040293)
+
+
+##Total number of violent crimes each year 2010 - 2017
 violent_data%>%
   ggplot(aes(x=year(Date.Occurred),fill=Crime.Type))+
   geom_bar()+
-  scale_x_continuous(breaks=seq(2010,2018,1))+
+  scale_x_continuous(breaks=seq(2010,2017,1))+
   ggtitle("Total Numbers of Violent Crimes in Los Angeles")+
   xlab("Year")+
   ylab("")+
@@ -118,8 +126,28 @@ violent_data%>%
 violent_data%>%
   ggplot(aes(x=year(Date.Occurred),fill=Crime.Type))+
   geom_bar(position="fill")+
-  scale_x_continuous(breaks=seq(2010,2018,1))+
+  scale_x_continuous(breaks=seq(2010,2017,1))+
   ggtitle("Percentage breakdown of Violent Crimes in Los Angeles")+
+  xlab("Year")+
+  ylab("")+
+  theme(legend.title=element_blank())
+
+##USC: Total number of violent crimes each year 2010 - 2017
+violent_data_USC%>%
+  ggplot(aes(x=year(Date.Occurred),fill=Crime.Type))+
+  geom_bar()+
+  scale_x_continuous(breaks=seq(2010,2017,1))+
+  ggtitle("Total Numbers of Violent Crimes around USC")+
+  xlab("Year")+
+  ylab("")+
+  theme(legend.title=element_blank())
+
+##USC: Percentage of each category each year 2010 - 2018
+violent_data_USC%>%
+  ggplot(aes(x=year(Date.Occurred),fill=Crime.Type))+
+  geom_bar(position="fill")+
+  scale_x_continuous(breaks=seq(2010,2017,1))+
+  ggtitle("Percentage breakdown of Violent Crimes around USC")+
   xlab("Year")+
   ylab("")+
   theme(legend.title=element_blank())
