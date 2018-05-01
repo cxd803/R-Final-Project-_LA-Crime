@@ -18,9 +18,15 @@ clean_data$Date.Reported=mdy(clean_data$Date.Reported)
 clean_data$Date.Occurred=mdy(clean_data$Date.Occurred)
 clean_data$Time.Occurred=hm(clean_data$Time.Occurred)
 
+clean_data=clean_data%>%
+  mutate(Hour = hour(Time.Occurred))%>%
+  mutate(Weekday=wday(Date.Reported,label=T,abbr=F))
+
+
 ### Omit the 2018 data, since it doesn't cover the whole year
 clean_data=clean_data%>%
-  filter(year(Date.Occurred)!=2018)
+    filter(year(Date.Occurred)!=2018)
+
 
 ### Format the location column into Lat & Lon
 # remove the ()
@@ -154,20 +160,20 @@ violent_data_USC%>%
 
 ##Violent crime occurance times
 violent_data_time=violent_data%>%
-  mutate(Weekday=wday(Date.Occurred,label=T,abbr=F),Hour=hour(Time.Occurred))%>%  ### Problem!!!! Getting Hour from column Time. Occurred
   group_by(Weekday,Hour)%>%
   summarize(count=n())
 
-n(hour(violent_data$Time.Occurred))
-
-str(violent_data)
-
-
 violent_data_time%>%
   ggplot(aes(x=Weekday,y=Hour,fill=count))+
-  geom_tile()
-scale_y_continuous(breaks=seq(0,23,1))
+  geom_tile()+
+  scale_y_continuous(breaks=seq(0,23,1))+
+  xlab("")+
+  ylab("")+
+  scale_fill_gradient(low="white", high="dark red")
+#Violent crimes occur most often at night time around 20p.m. to 21p.m From Monday to Friday.
+#On weekend, the peak violent crime occurs more often around 1a.m.
+#In general, morning hour around 6a.m to 7a.m are the safest time.
 
 
-## Victim Age Distribution
+  
   
