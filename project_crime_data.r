@@ -175,5 +175,17 @@ violent_data_time%>%
 #In general, morning hour around 6a.m to 7a.m are the safest time.
 
 
+#Most dangerous USC neighborhoods by day of week
+USC +
+  stat_density2d(data=violent_data_USC,
+                 aes(x=Lon, y=Lat,
+                     fill = ..level..,
+                     alpha=..level..),
+                 geom="polygon")+
+  facet_wrap(~Weekday, nrow = 2)
+
+#South side of USC is the most dangerous neighborhood from Sunday to Saturday. Wednesday seems to the most dangerous day of the week.
+
+
   
   
